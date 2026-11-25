@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/metacubex/mihomo/component/geodata"
 	"github.com/metacubex/mihomo/component/geodata/router"
@@ -157,5 +158,32 @@ func TestGeoSourceStagesEveryRequiredFileBeforeInstalling(t *testing.T) {
 	got, _ := os.ReadFile(path)
 	if !bytes.Equal(got, original) {
 		t.Fatal("first file changed before the second file was ready")
+	}
+}
+
+func TestGeoSourceDownloadsAreConcurrentBeforeAnyInstallation(t *testing.T) {
+	geoSourceTestHome(t)
+	raw := geoSourceTestConfig()
+	raw.GeodataMode = true
+	raw.Rule = append(raw.Rule, "GEOIP,CN,DIRECT")
+	started := make(chan string, 2)
+	release := make(chan struct{})
+	fetchGeoSource = func(link string) ([]byte, error) { started <- link; <-release; return nil, errors.New("offline") }
+	done := make(chan error, 1)
+	go func() { _, err := parseConfigWithGeoSources(raw); done <- err }()
+	timer := time.NewTimer(2 * time.Second)
+	defer timer.Stop()
+	defer func() { close(release); <-done }()
+	for i := 0; i < 2; i++ {
+		select {
+		case <-started:
+		case <-timer.C:
+			t.Fatal("database downloads ran serially")
+		}
+	}
+	select {
+	case <-done:
+		t.Fatal("configuration completed before its downloads")
+	default:
 	}
 }

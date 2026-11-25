@@ -28,7 +28,7 @@ import (
 var geoSourceMu sync.RWMutex
 
 var fetchGeoSource = func(link string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
 	response, err := mihomoHttp.HttpRequest(ctx, link, http.MethodGet, nil, nil)
 	if err != nil {
@@ -128,8 +128,14 @@ func resetGeoSource(kind string) {
 	case "GEOIP":
 		geodata.ClearGeoIPCache()
 	case "MMDB":
+		if mmdb.Verify(C.Path.MMDB()) {
+			_ = mmdb.IPInstance().Reader.Close()
+		}
 		mmdb.ReloadIP()
 	case "ASN":
+		if mmdb.Verify(C.Path.ASN()) {
+			_ = mmdb.ASNInstance().Reader.Close()
+		}
 		mmdb.ReloadASN()
 	}
 }
@@ -154,69 +160,93 @@ func parseConfigWithGeoSources(raw *config.RawConfig) (*config.Config, error) {
 	if err != nil {
 		return nil, &MethodError{Code: "geo_source_failed", Message: "Cannot stage Geo databases"}
 	}
-	defer os.RemoveAll(stageDir)
+	retainStage := false
+	defer func() {
+		if !retainStage {
+			_ = os.RemoveAll(stageDir)
+		}
+	}()
 	for _, file := range files {
 		file.digest = geoSourceDigest(file.link)
 		_, statErr := os.Stat(file.path)
 		if manifest[file.kind] == file.digest && statErr == nil {
 			continue
 		}
-		data, downloadErr := fetchGeoSource(file.link)
-		if downloadErr == nil {
-			downloadErr = validateGeoSource(file.kind, data)
-		}
-		if downloadErr != nil {
-			return nil, &MethodError{Code: "geo_source_failed", Message: fmt.Sprintf("%s: %v; previous databases preserved", file.kind, downloadErr)}
-		}
 		file.stage = filepath.Join(stageDir, file.kind+".new")
 		file.backup = filepath.Join(stageDir, file.kind+".old")
-		if err := os.WriteFile(file.stage, data, 0600); err != nil {
-			return nil, err
-		}
 		changed = append(changed, file)
+	}
+	var downloads sync.WaitGroup
+	downloadErrors := make([]error, len(changed))
+	for i, file := range changed {
+		downloads.Add(1)
+		go func(i int, file geoSourceFile) {
+			defer downloads.Done()
+			data, err := fetchGeoSource(file.link)
+			if err == nil {
+				err = validateGeoSource(file.kind, data)
+			}
+			if err == nil {
+				err = os.WriteFile(file.stage, data, 0600)
+			}
+			downloadErrors[i] = err
+		}(i, file)
+	}
+	downloads.Wait()
+	for i, err := range downloadErrors {
+		if err != nil {
+			return nil, &MethodError{Code: "geo_source_failed", Message: fmt.Sprintf("%s: %v; previous databases preserved", changed[i].kind, err)}
+		}
 	}
 	oldURLs := map[string]string{"GEOSITE": geodata.GeoSiteUrl(), "GEOIP": geodata.GeoIpUrl(), "MMDB": geodata.MmdbUrl(), "ASN": geodata.ASNUrl()}
 	oldMode, oldLoader := geodata.GeodataMode(), geodata.LoaderName()
 	installed := []geoSourceFile{}
-	rollback := func() {
+	rollback := func(cause error) error {
 		for kind, link := range oldURLs {
 			geoResources[kind].setUrl(link)
 		}
 		geodata.SetGeodataMode(oldMode)
 		geodata.SetLoader(oldLoader)
+		failures := []error{cause}
 		for i := len(installed) - 1; i >= 0; i-- {
 			file := installed[i]
+			var restoreErr error
 			if file.existed {
-				_ = os.Rename(file.backup, file.path)
+				restoreErr = os.Rename(file.backup, file.path)
 			} else {
-				_ = os.Remove(file.path)
+				restoreErr = os.Remove(file.path)
+			}
+			if restoreErr != nil && !os.IsNotExist(restoreErr) {
+				retainStage = true
+				failures = append(failures, restoreErr)
 			}
 			resetGeoSource(file.kind)
 		}
+		status := "previous databases restored"
+		if retainStage {
+			status = "database recovery files retained"
+		}
+		return &MethodError{Code: "geo_source_failed", Message: fmt.Sprintf("Geo source configuration failed; %s: %v", status, errors.Join(failures...))}
 	}
 	for _, file := range changed {
 		if _, err := os.Stat(file.path); err == nil {
 			if err := os.Link(file.path, file.backup); err != nil {
-				rollback()
-				return nil, err
+				return nil, rollback(err)
 			}
 			file.existed = true
 		} else if !os.IsNotExist(err) {
-			rollback()
-			return nil, err
+			return nil, rollback(err)
 		}
 		if err := os.Rename(file.stage, file.path); err != nil {
-			rollback()
-			return nil, err
+			return nil, rollback(err)
 		}
 		installed = append(installed, file)
 		resetGeoSource(file.kind)
 	}
 	cfg, err := config.ParseRawConfig(raw)
 	if err != nil {
-		rollback()
 		if len(changed) > 0 {
-			return nil, &MethodError{Code: "geo_source_failed", Message: "Geo source configuration rejected; previous databases restored: " + err.Error()}
+			return nil, rollback(err)
 		}
 		return nil, err
 	}
@@ -226,8 +256,7 @@ func parseConfigWithGeoSources(raw *config.RawConfig) (*config.Config, error) {
 	if len(changed) > 0 {
 		data, _ := json.Marshal(manifest)
 		if err = writeGeoSource(manifestPath, data); err != nil {
-			rollback()
-			return nil, err
+			return nil, rollback(err)
 		}
 	}
 	return cfg, nil

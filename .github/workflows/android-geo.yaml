@@ -46,7 +46,7 @@ jobs:
           sed -i 's/build_assets: true/build_assets: false/g' pubspec.yaml
           dart format --output=none --set-exit-if-changed lib/common/geo_sources.dart lib/common/task.dart lib/models/clash_config.dart lib/providers/actions/setup.dart lib/providers/state/system.dart lib/views/resources.dart test/common/geo_sources_test.dart test/models/config_test.dart
           flutter analyze --no-fatal-infos
-          flutter test test/common/geo_sources_test.dart test/common/task_test.dart test/models/config_test.dart test/providers/geo_resource_action_test.dart test/providers/setup_action_test.dart test/providers/state_derived_test.dart test/views/resources_view_test.dart test/l10n test/lint/dynamic_message_key_test.dart
+          flutter test test/core/interface_result_test.dart test/core/controller_test.dart test/common/geo_sources_test.dart test/common/task_test.dart test/models/config_test.dart test/providers/geo_resource_action_test.dart test/providers/setup_action_test.dart test/providers/state_derived_test.dart test/views/resources_view_test.dart test/l10n test/lint/dynamic_message_key_test.dart
           cp /tmp/flclash-pubspec.yaml pubspec.yaml
       - name: Core tests
         working-directory: core

@@ -22,7 +22,7 @@ running config and calls the runtime setter for each one, or `updateListeners` f
 The update path carries these fields:
 
 - From `PatchClashConfig`: `mode`, `log-level`, `mixed-port`, `allow-lan`, `find-process-mode`, `external-controller`,
-  `secret`, `geo-auto-update`, `geo-update-interval`, `geox-url`, and the `tun` keys of `Tun.coreJson`: `enable`,
+  `secret`, `geo-auto-update`, `geo-update-interval`, and the `tun` keys of `Tun.coreJson`: `enable`,
   `device`, `stack`, and `auto-route`, always on.
 - From `PatchClashConfig`, only while picked in `generalOverrideKeys`: `ipv6`, `tcp-concurrent` and `unified-delay`.
   Unpicked, they go as null and Go leaves the profile's value running.
@@ -95,6 +95,20 @@ database once instead of watching them. Content is applied explicitly by whateve
 - A profile switch runs `fullSetup`.
 - A start applies again with `force` unless the last apply saw the same inputs (`inputsApplied`), the `CoreOptions`
   in `SetupParams` included.
+
+## Geo Sources
+
+`lib/common/geo_sources.dart` resolves each resource from the profile when `preferProfileGeoSources` is enabled,
+then from app settings and defaults. `SetupAction` captures the profile sources before generating the overlay and
+publishes them to `profileGeoSourceProvider`; Resources uses `activeGeoSourcesProvider` for its effective URLs.
+The full profile build writes the resolved map into `geox-url`. Live updates send an empty URL map, so an unrelated
+setting change cannot replace the profile's sources. `setupOnly` keeps both the preference and app URLs, making
+source changes reapply the profile. A manual resource update waits for unapplied profile settings first.
+
+`core/geo_sources.go` stages the required databases before parsing the new config. A manifest stores source hashes;
+a changed or unknown source refreshes its file. Source refresh and native Geo updates share `geoSourceMu`. Failed
+source validation restores database files and keeps the previous running configuration. Config setup has a longer
+RPC guard for first-time resource downloads.
 
 ## Restart
 

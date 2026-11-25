@@ -120,7 +120,11 @@ abstract class CoreHandlerInterface {
   Future<void> crash() => _command(CoreMethod.coreCrash);
 
   Future<void> setupConfig(SetupParams params) {
-    return _command(CoreMethod.configSetup, arguments: params.toJson());
+    return _command(
+      CoreMethod.configSetup,
+      arguments: params.toJson(),
+      timeout: const Duration(minutes: 6),
+    );
   }
 
   Future<void> updateConfig(UpdateParams params) {
