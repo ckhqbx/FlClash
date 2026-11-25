@@ -1137,5 +1137,10 @@
   "coreRunningDesc": "앱이 코어에 연결되어 있습니다",
   "forceRestartCore": "강제 다시 시작",
   "vpnPermissionNotGranted": "VPN 권한이 허용되지 않아 VPN을 시작하지 않았습니다. 다른 앱이 상시 사용 VPN으로 설정되어 있어도 시작할 수 없습니다.",
-  "vpnServiceStartFailed": "VPN 서비스를 시작하지 못했습니다."
+  "vpnServiceStartFailed": "VPN 서비스를 시작하지 못했습니다.",
+  "preferProfileGeoSources": "프로필 Geo 소스 우선",
+  "preferProfileGeoSourcesDescription": "현재 프로필의 리소스 URL을 사용하고 누락된 URL은 앱 설정으로 보완합니다.",
+  "geoSourceProfile": "소스: 현재 프로필",
+  "geoSourceApp": "소스: 앱 설정",
+  "geoSourceApplyFailed": "Geo 리소스를 업데이트하기 전에 현재 프로필을 적용하세요."
 }

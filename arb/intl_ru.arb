@@ -1137,5 +1137,10 @@
   "coreRunningDesc": "Приложение подключено к ядру",
   "forceRestartCore": "Принудительный перезапуск",
   "vpnPermissionNotGranted": "Разрешение на VPN не выдано, поэтому VPN не запущен. Постоянная VPN, заданная для другого приложения, тоже мешает запуску.",
-  "vpnServiceStartFailed": "Не удалось запустить службу VPN."
+  "vpnServiceStartFailed": "Не удалось запустить службу VPN.",
+  "preferProfileGeoSources": "Приоритет Geo-источников профиля",
+  "preferProfileGeoSourcesDescription": "Использовать URL профиля; недостающие URL брать из настроек приложения.",
+  "geoSourceProfile": "Источник: текущий профиль",
+  "geoSourceApp": "Источник: настройки приложения",
+  "geoSourceApplyFailed": "Перед обновлением Geo-ресурсов успешно примените текущий профиль."
 }

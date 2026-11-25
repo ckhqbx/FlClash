@@ -326,3 +326,19 @@ class HeldCoreStatus extends _$HeldCoreStatus {
     return ref.read(coreStatusProvider);
   }
 }
+
+@Riverpod(keepAlive: true)
+class ProfileGeoSource extends _$ProfileGeoSource {
+  @override
+  Map<GeoResource, String> build() => const {};
+
+  void setSources(Map<GeoResource, String> sources) {
+    state = sources;
+  }
+}
+
+@riverpod
+Map<GeoResource, String> activeGeoSources(Ref ref) => effectiveGeoSources(
+  ref.watch(profileGeoSourceProvider),
+  ref.watch(patchClashConfigProvider),
+);

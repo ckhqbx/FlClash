@@ -666,6 +666,106 @@ abstract class _$HeldCoreStatus extends $Notifier<CoreStatus> {
   }
 }
 
+@ProviderFor(ProfileGeoSource)
+final profileGeoSourceProvider = ProfileGeoSourceProvider._();
+
+final class ProfileGeoSourceProvider
+    extends $NotifierProvider<ProfileGeoSource, Map<GeoResource, String>> {
+  ProfileGeoSourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profileGeoSourceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$profileGeoSourceHash();
+
+  @$internal
+  @override
+  ProfileGeoSource create() => ProfileGeoSource();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<GeoResource, String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<GeoResource, String>>(value),
+    );
+  }
+}
+
+String _$profileGeoSourceHash() => r'9d7c60da6d1eb855af6c1b688bfec2dd9e7bd03d';
+
+abstract class _$ProfileGeoSource extends $Notifier<Map<GeoResource, String>> {
+  Map<GeoResource, String> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref as $Ref<Map<GeoResource, String>, Map<GeoResource, String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Map<GeoResource, String>, Map<GeoResource, String>>,
+              Map<GeoResource, String>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(activeGeoSources)
+final activeGeoSourcesProvider = ActiveGeoSourcesProvider._();
+
+final class ActiveGeoSourcesProvider
+    extends
+        $FunctionalProvider<
+          Map<GeoResource, String>,
+          Map<GeoResource, String>,
+          Map<GeoResource, String>
+        >
+    with $Provider<Map<GeoResource, String>> {
+  ActiveGeoSourcesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activeGeoSourcesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activeGeoSourcesHash();
+
+  @$internal
+  @override
+  $ProviderElement<Map<GeoResource, String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Map<GeoResource, String> create(Ref ref) {
+    return activeGeoSources(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<GeoResource, String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<GeoResource, String>>(value),
+    );
+  }
+}
+
+String _$activeGeoSourcesHash() => r'98000f80bf6c5aaec20cfb7157178e7ef2e271a1';
+
 @ProviderFor(DynamicColor)
 final dynamicColorProvider = DynamicColorProvider._();
 

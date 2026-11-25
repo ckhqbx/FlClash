@@ -47,6 +47,13 @@ class GeoResourceAction extends _$GeoResourceAction {
     GeoResource geoResource, {
     bool announceSuccess = true,
   }) async {
+    if (ref.read(currentProfileIdProvider) != null) {
+      final setup = ref.read(setupActionProvider.notifier);
+      if (!await setup.inputsApplied() &&
+          !await setup.applyProfile(silence: true)) {
+        throw MessageException(currentAppLocalizations.geoSourceApplyFailed);
+      }
+    }
     final running = _operations.containsKey(geoResource);
     final previous = _manualUpdates[geoResource];
     _manualUpdates[geoResource] = announceSuccess;

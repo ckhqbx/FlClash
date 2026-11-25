@@ -861,90 +861,90 @@ Map<String, dynamic> _$ClashConfigToJson(_ClashConfig instance) =>
       'sub-rules': instance.subRules,
     };
 
-_PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
-    _PatchClashConfig(
-      mixedPort: json['mixed-port'] == null
-          ? defaultMixedPort
-          : _mixedPortFromJson(json['mixed-port']),
-      socksPort: (json['socks-port'] as num?)?.toInt() ?? 0,
-      port: (json['port'] as num?)?.toInt() ?? 0,
-      redirPort: (json['redir-port'] as num?)?.toInt() ?? 0,
-      tproxyPort: (json['tproxy-port'] as num?)?.toInt() ?? 0,
-      mode: $enumDecodeNullable(_$ModeEnumMap, json['mode']) ?? Mode.rule,
-      allowLan: json['allow-lan'] as bool? ?? false,
-      logLevel:
-          $enumDecodeNullable(_$LogLevelEnumMap, json['log-level']) ??
-          LogLevel.error,
-      ipv6: json['ipv6'] as bool? ?? false,
-      findProcessMode:
-          $enumDecodeNullable(
-            _$FindProcessModeEnumMap,
-            json['find-process-mode'],
-            unknownValue: FindProcessMode.strict,
-          ) ??
-          FindProcessMode.strict,
-      interfaceNameMode:
-          $enumDecodeNullable(
-            _$InterfaceNameModeEnumMap,
-            json['interface-name-mode'],
-            unknownValue: InterfaceNameMode.clear,
-          ) ??
-          InterfaceNameMode.clear,
-      interfaceName: json['interface-name'] as String? ?? '',
-      keepAliveInterval:
-          (json['keep-alive-interval'] as num?)?.toInt() ??
-          defaultKeepAliveInterval,
-      keepAliveIdle: (json['keep-alive-idle'] as num?)?.toInt() ?? 15,
-      disableKeepAlive: json['disable-keep-alive'] as bool? ?? false,
-      routingMark: (json['routing-mark'] as num?)?.toInt() ?? 0,
-      unifiedDelay: json['unified-delay'] as bool? ?? true,
-      tcpConcurrent: json['tcp-concurrent'] as bool? ?? true,
-      tun: json['tun'] == null
-          ? defaultTun
-          : Tun.safeFormJson(json['tun'] as Map<String, Object?>?),
-      dns: json['dns'] == null
-          ? defaultDns
-          : Dns.safeDnsFromJson(json['dns'] as Map<String, Object?>),
-      dnsOverrideKeys: json['dns-override-keys'] == null
-          ? const {}
-          : _dnsOverrideKeysFromJson(json['dns-override-keys'] as List),
-      tunOverride: json['tun-override'] == null
-          ? defaultProfileTun
-          : ProfileTun.safeFromJson(
-              json['tun-override'] as Map<String, Object?>,
-            ),
-      tunOverrideKeys: json['tun-override-keys'] == null
-          ? const {}
-          : _tunOverrideKeysFromJson(json['tun-override-keys'] as List),
-      geoXUrl: json['geox-url'] == null
-          ? defaultGeoXUrl
-          : _geoXUrlFromJson(json['geox-url'] as Map<String, Object?>?),
-      geodataLoader:
-          $enumDecodeNullable(_$GeodataLoaderEnumMap, json['geodata-loader']) ??
-          GeodataLoader.memconservative,
-      globalUa: json['global-ua'] as String?,
-      externalController:
-          $enumDecodeNullable(
-            _$ExternalControllerStatusEnumMap,
-            json['external-controller'],
-          ) ??
-          ExternalControllerStatus.close,
-      secret: json['secret'] as String? ?? '',
-      hosts:
-          (json['hosts'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, e as String),
-          ) ??
-          const {},
-      geoAutoUpdate: json['geo-auto-update'] as bool? ?? true,
-      geoUpdateInterval: (json['geo-update-interval'] as num?)?.toInt() ?? 24,
-      testUrl: json['test-url'] as String? ?? defaultTestUrl,
-      generalOverrideKeys: json['general-override-keys'] == null
-          ? const {}
-          : _generalOverrideKeysFromJson(json['general-override-keys'] as List),
-      mitm: json['mitm'] == null
-          ? defaultMitm
-          : Mitm.fromJson(json['mitm'] as Map<String, dynamic>),
-    );
+_PatchClashConfig _$PatchClashConfigFromJson(
+  Map<String, dynamic> json,
+) => _PatchClashConfig(
+  mixedPort: json['mixed-port'] == null
+      ? defaultMixedPort
+      : _mixedPortFromJson(json['mixed-port']),
+  socksPort: (json['socks-port'] as num?)?.toInt() ?? 0,
+  port: (json['port'] as num?)?.toInt() ?? 0,
+  redirPort: (json['redir-port'] as num?)?.toInt() ?? 0,
+  tproxyPort: (json['tproxy-port'] as num?)?.toInt() ?? 0,
+  mode: $enumDecodeNullable(_$ModeEnumMap, json['mode']) ?? Mode.rule,
+  allowLan: json['allow-lan'] as bool? ?? false,
+  logLevel:
+      $enumDecodeNullable(_$LogLevelEnumMap, json['log-level']) ??
+      LogLevel.error,
+  ipv6: json['ipv6'] as bool? ?? false,
+  findProcessMode:
+      $enumDecodeNullable(
+        _$FindProcessModeEnumMap,
+        json['find-process-mode'],
+        unknownValue: FindProcessMode.strict,
+      ) ??
+      FindProcessMode.strict,
+  interfaceNameMode:
+      $enumDecodeNullable(
+        _$InterfaceNameModeEnumMap,
+        json['interface-name-mode'],
+        unknownValue: InterfaceNameMode.clear,
+      ) ??
+      InterfaceNameMode.clear,
+  interfaceName: json['interface-name'] as String? ?? '',
+  keepAliveInterval:
+      (json['keep-alive-interval'] as num?)?.toInt() ??
+      defaultKeepAliveInterval,
+  keepAliveIdle: (json['keep-alive-idle'] as num?)?.toInt() ?? 15,
+  disableKeepAlive: json['disable-keep-alive'] as bool? ?? false,
+  routingMark: (json['routing-mark'] as num?)?.toInt() ?? 0,
+  unifiedDelay: json['unified-delay'] as bool? ?? true,
+  tcpConcurrent: json['tcp-concurrent'] as bool? ?? true,
+  tun: json['tun'] == null
+      ? defaultTun
+      : Tun.safeFormJson(json['tun'] as Map<String, Object?>?),
+  dns: json['dns'] == null
+      ? defaultDns
+      : Dns.safeDnsFromJson(json['dns'] as Map<String, Object?>),
+  dnsOverrideKeys: json['dns-override-keys'] == null
+      ? const {}
+      : _dnsOverrideKeysFromJson(json['dns-override-keys'] as List),
+  tunOverride: json['tun-override'] == null
+      ? defaultProfileTun
+      : ProfileTun.safeFromJson(json['tun-override'] as Map<String, Object?>),
+  tunOverrideKeys: json['tun-override-keys'] == null
+      ? const {}
+      : _tunOverrideKeysFromJson(json['tun-override-keys'] as List),
+  geoXUrl: json['geox-url'] == null
+      ? defaultGeoXUrl
+      : _geoXUrlFromJson(json['geox-url'] as Map<String, Object?>?),
+  preferProfileGeoSources: json['prefer-profile-geo-sources'] as bool? ?? true,
+  geodataLoader:
+      $enumDecodeNullable(_$GeodataLoaderEnumMap, json['geodata-loader']) ??
+      GeodataLoader.memconservative,
+  globalUa: json['global-ua'] as String?,
+  externalController:
+      $enumDecodeNullable(
+        _$ExternalControllerStatusEnumMap,
+        json['external-controller'],
+      ) ??
+      ExternalControllerStatus.close,
+  secret: json['secret'] as String? ?? '',
+  hosts:
+      (json['hosts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  geoAutoUpdate: json['geo-auto-update'] as bool? ?? true,
+  geoUpdateInterval: (json['geo-update-interval'] as num?)?.toInt() ?? 24,
+  testUrl: json['test-url'] as String? ?? defaultTestUrl,
+  generalOverrideKeys: json['general-override-keys'] == null
+      ? const {}
+      : _generalOverrideKeysFromJson(json['general-override-keys'] as List),
+  mitm: json['mitm'] == null
+      ? defaultMitm
+      : Mitm.fromJson(json['mitm'] as Map<String, dynamic>),
+);
 
 Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
     <String, dynamic>{
@@ -977,6 +977,7 @@ Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
           .map((e) => _$TunOverrideKeyEnumMap[e]!)
           .toList(),
       'geox-url': _geoXUrlToJson(instance.geoXUrl),
+      'prefer-profile-geo-sources': instance.preferProfileGeoSources,
       'geodata-loader': _$GeodataLoaderEnumMap[instance.geodataLoader]!,
       'global-ua': instance.globalUa,
       'external-controller':

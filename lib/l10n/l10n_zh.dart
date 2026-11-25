@@ -3728,4 +3728,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vpnServiceStartFailed => 'VPN 服务无法启动。';
+
+  @override
+  String get preferProfileGeoSources => '优先使用配置文件的 Geo 来源';
+
+  @override
+  String get preferProfileGeoSourcesDescription =>
+      '使用当前配置指定的资源地址，未指定的项目沿用应用设置。';
+
+  @override
+  String get geoSourceProfile => '来源：当前配置';
+
+  @override
+  String get geoSourceApp => '来源：应用设置';
+
+  @override
+  String get geoSourceApplyFailed => '请先成功加载当前配置，再更新 Geo 资源。';
 }

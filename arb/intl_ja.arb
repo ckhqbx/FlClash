@@ -1137,5 +1137,10 @@
   "coreRunningDesc": "アプリはコアに接続されています",
   "forceRestartCore": "強制再起動",
   "vpnPermissionNotGranted": "VPN の権限が許可されなかったため、VPN は起動しませんでした。ほかのアプリが常時接続 VPN に設定されている場合も起動できません。",
-  "vpnServiceStartFailed": "VPN サービスを起動できませんでした。"
+  "vpnServiceStartFailed": "VPN サービスを起動できませんでした。",
+  "preferProfileGeoSources": "設定ファイルの Geo ソースを優先",
+  "preferProfileGeoSourcesDescription": "現在の設定のリソース URL を使用し、未指定の項目はアプリ設定で補います。",
+  "geoSourceProfile": "ソース：現在の設定",
+  "geoSourceApp": "ソース：アプリ設定",
+  "geoSourceApplyFailed": "Geo リソースを更新する前に、現在の設定を正常に適用してください。"
 }

@@ -3852,4 +3852,20 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get vpnServiceStartFailed => 'VPN 서비스를 시작하지 못했습니다.';
+
+  @override
+  String get preferProfileGeoSources => '프로필 Geo 소스 우선';
+
+  @override
+  String get preferProfileGeoSourcesDescription =>
+      '현재 프로필의 리소스 URL을 사용하고 누락된 URL은 앱 설정으로 보완합니다.';
+
+  @override
+  String get geoSourceProfile => '소스: 현재 프로필';
+
+  @override
+  String get geoSourceApp => '소스: 앱 설정';
+
+  @override
+  String get geoSourceApplyFailed => 'Geo 리소스를 업데이트하기 전에 현재 프로필을 적용하세요.';
 }

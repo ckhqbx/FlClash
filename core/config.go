@@ -18,7 +18,6 @@ import (
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/hub"
-	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/hub/route"
 	authStore "github.com/metacubex/mihomo/listener/auth"
 	LC "github.com/metacubex/mihomo/listener/config"
@@ -109,7 +108,11 @@ func loadConfig(path string) (*config.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := executor.ParseWithBytes(buf)
+	raw, err := unmarshalRawConfig(buf)
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := parseConfigWithGeoSources(raw)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +146,14 @@ func applyConfig(params *SetupParams) error {
 
 	applyOptions(params.Options)
 	cfg, err := loadSetupConfig(params)
+	var sourceError *MethodError
+	if errors.As(err, &sourceError) && sourceError.Code == "geo_source_failed" {
+		if currentConfig != nil {
+			hub.ApplyConfig(currentConfig)
+			reconcileGeoUpdater()
+		}
+		return err
+	}
 	if err != nil {
 		// The fallback is what keeps the listeners serving while the host
 		// reports the error, but it applies a config with no proxies in it.

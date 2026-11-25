@@ -10,6 +10,7 @@ import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
+import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -207,6 +208,21 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
                   SliverToBoxAdapter(
                     child: generateSection(
                       items: [
+                        ConfigToggleItem(
+                          title: (l10n) => l10n.preferProfileGeoSources,
+                          subtitle: (l10n) =>
+                              l10n.preferProfileGeoSourcesDescription,
+                          selector: patchClashConfigProvider.select(
+                            (settings) => settings.preferProfileGeoSources,
+                          ),
+                          onChanged: (ref, value) => ref
+                              .read(patchClashConfigProvider.notifier)
+                              .update(
+                                (settings) => settings.copyWith(
+                                  preferProfileGeoSources: value,
+                                ),
+                              ),
+                        ),
                         ListItem.toggle(
                           title: Text(appLocalizations.autoUpdate),
                           value: autoUpdate,
@@ -278,6 +294,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
 class _ResourceItem extends StatelessWidget {
   final String title;
   final String? url;
+  final String? sourceLabel;
   final String? chip;
   final DateTime? lastUpdateTime;
   final bool pending;
@@ -288,6 +305,7 @@ class _ResourceItem extends StatelessWidget {
   const _ResourceItem({
     required this.title,
     required this.url,
+    this.sourceLabel,
     required this.chip,
     required this.lastUpdateTime,
     this.pending = false,
@@ -365,12 +383,27 @@ class _ResourceItem extends StatelessWidget {
       child: DecorationListItem(
         onPressed: onEdit,
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: lastUpdateTime != null || pending
-            ? LastUpdateTimeText(
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (sourceLabel != null) ...[
+              Text(sourceLabel!, style: subtitleStyle),
+              Text(
+                url ?? '',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: subtitleStyle,
+              ),
+            ],
+            if (lastUpdateTime != null || pending)
+              LastUpdateTimeText(
                 lastUpdateDate: lastUpdateTime,
                 style: subtitleStyle,
               )
-            : Text(context.appLocalizations.unknown, style: subtitleStyle),
+            else
+              Text(context.appLocalizations.unknown, style: subtitleStyle),
+          ],
+        ),
         trailing: _buildTrailing(context),
       ),
     );
@@ -542,8 +575,19 @@ class _GeoResourceItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isUpdating = ref.watch(isUpdatingProvider(type.updatingKey));
     final url = ref.watch(
-      patchClashConfigProvider.select((state) => state.geoXUrl[type]),
+      activeGeoSourcesProvider.select((sources) => sources[type]),
     );
+    final fromProfile =
+        ref.watch(
+          patchClashConfigProvider.select(
+            (settings) => settings.preferProfileGeoSources,
+          ),
+        ) &&
+        ref.watch(
+          profileGeoSourceProvider.select(
+            (sources) => sources.containsKey(type),
+          ),
+        );
     return _FileInfoBuilder(
       source: type,
       updatingKey: type.updatingKey,
@@ -551,6 +595,9 @@ class _GeoResourceItem extends ConsumerWidget {
       load: () => _geoFileInfo(type),
       builder: (context, fileInfo, pending) => _ResourceItem(
         title: type.name,
+        sourceLabel: fromProfile
+            ? context.appLocalizations.geoSourceProfile
+            : context.appLocalizations.geoSourceApp,
         url: url,
         chip: fileInfo?.size.traffic.show,
         lastUpdateTime: fileInfo?.lastModified,
@@ -559,7 +606,9 @@ class _GeoResourceItem extends ConsumerWidget {
         onSync: () => ref
             .read(geoResourceActionProvider.notifier)
             .updateGeoResource(type),
-        onEdit: url == null ? null : () => _updateUrl(context, ref, url),
+        onEdit: url == null || fromProfile
+            ? null
+            : () => _updateUrl(context, ref, url),
       ),
     );
   }

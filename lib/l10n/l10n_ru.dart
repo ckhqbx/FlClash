@@ -3950,4 +3950,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get vpnServiceStartFailed => 'Не удалось запустить службу VPN.';
+
+  @override
+  String get preferProfileGeoSources => 'Приоритет Geo-источников профиля';
+
+  @override
+  String get preferProfileGeoSourcesDescription =>
+      'Использовать URL профиля; недостающие URL брать из настроек приложения.';
+
+  @override
+  String get geoSourceProfile => 'Источник: текущий профиль';
+
+  @override
+  String get geoSourceApp => 'Источник: настройки приложения';
+
+  @override
+  String get geoSourceApplyFailed =>
+      'Перед обновлением Geo-ресурсов успешно примените текущий профиль.';
 }

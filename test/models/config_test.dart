@@ -89,7 +89,7 @@ void main() {
       expect(config.geoXUrl, {GeoResource.MMDB: 'https://example.com/mmdb'});
     });
 
-    test('toUpdateParams sends geoXUrl to the Core under geox-url', () {
+    test('live updates cannot overwrite the profile Geo sources', () {
       final params =
           const PatchClashConfig(
             geoXUrl: {
@@ -102,10 +102,7 @@ void main() {
           );
 
       final json = jsonDecode(jsonEncode(params)) as Map<String, Object?>;
-      expect(json['geox-url'], {
-        'mmdb': 'https://example.com/geoip.metadb',
-        'geosite': 'https://example.com/geosite.dat',
-      });
+      expect(json['geox-url'], isEmpty);
     });
 
     test('toUpdateParams sends the Core options under options', () {
@@ -847,14 +844,13 @@ void main() {
         unifiedDelay: false,
         geoAutoUpdate: false,
         geoUpdateInterval: 6,
-        geoXUrl: {...defaultGeoXUrl, GeoResource.MMDB: 'https://mmdb.test'},
         testUrl: 'https://probe.test/204',
       );
 
       final defaults = defaultClashConfig.toJson();
-      final liveKeys = liveParams(
-        defaultClashConfig,
-      ).toJson().keys.where(defaults.containsKey);
+      final liveKeys = liveParams(defaultClashConfig).toJson().keys.where(
+        (key) => key != 'geox-url' && defaults.containsKey(key),
+      );
       expect(liveKeys, isNotEmpty);
       for (final key in liveKeys) {
         expect(live.toJson()[key], isNot(defaults[key]), reason: key);
@@ -865,6 +861,10 @@ void main() {
 
     test('keeps each field only a full setup carries', () {
       final setupOnlyChanges = [
+        defaultClashConfig.copyWith(
+          geoXUrl: {...defaultGeoXUrl, GeoResource.MMDB: 'https://mmdb.test'},
+        ),
+        defaultClashConfig.copyWith(preferProfileGeoSources: false),
         defaultClashConfig.copyWith(socksPort: 7891),
         defaultClashConfig.copyWith(redirPort: 7892),
         defaultClashConfig.copyWith(keepAliveInterval: 60),

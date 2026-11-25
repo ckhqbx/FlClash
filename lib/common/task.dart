@@ -332,7 +332,10 @@ Future<RealProfile> _makeRealProfileTask(MakeRealProfileState data) async {
     ...attachedRuleSets,
   });
   rawConfig['profile']['store-selected'] = false;
-  rawConfig['geox-url'] = realPatchConfig.geoXUrl.raw;
+  rawConfig['geox-url'] = effectiveGeoSources(
+    profileGeoSources(rawConfig['geox-url']),
+    realPatchConfig,
+  ).raw;
   rawConfig['global-ua'] = realPatchConfig.globalUa ?? defaultUA;
   if (rawConfig['hosts'] == null) {
     rawConfig['hosts'] = {};

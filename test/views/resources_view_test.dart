@@ -6,6 +6,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
+import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/resources.dart';
@@ -149,7 +150,7 @@ void main() {
     }
     expect(find.byType(FutureBuilder<FileInfo?>), findsNWidgets(4));
     for (final url in defaultGeoXUrl.values) {
-      expect(find.text(url), findsNothing);
+      expect(find.text(url), findsOneWidget);
     }
 
     await tester.tap(find.text(GeoResource.MMDB.name));
@@ -201,7 +202,7 @@ void main() {
       findsNothing,
     );
     expect(autoUpdate(), isTrue);
-    expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+    expect(tester.widget<Switch>(find.byType(Switch).last).value, isTrue);
     expect(interval, findsOneWidget);
 
     await tester.tap(find.text(l10n.autoUpdate));
@@ -212,7 +213,7 @@ void main() {
     await tester.tap(find.text(l10n.autoUpdate));
     await tester.pumpAndSettle();
     expect(autoUpdate(), isTrue);
-    expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+    expect(tester.widget<Switch>(find.byType(Switch).last).value, isTrue);
     expect(
       find.text('${defaultClashConfig.geoUpdateInterval} ${l10n.hours}'),
       findsOneWidget,
@@ -234,7 +235,7 @@ void main() {
     expect(container.read(patchClashConfigProvider).geoUpdateInterval, 6);
     expect(find.text('6 ${l10n.hours}'), findsOneWidget);
 
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.byType(Switch).last);
     await tester.pumpAndSettle();
     expect(autoUpdate(), isFalse);
     expect(interval, findsNothing);
@@ -531,4 +532,37 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
+  testWidgets(
+    'profile sources are visible and the preference can be switched',
+    (tester) async {
+      final container = createContainer();
+      container.read(profileGeoSourceProvider.notifier).setSources({
+        GeoResource.MMDB: 'https://profile.test/country.mmdb',
+      });
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const TestApp(child: ResourcesView()),
+        ),
+      );
+      await pumpUntilFound(tester, find.text(GeoResource.MMDB.name));
+      await tester.pumpAndSettle();
+      expect(find.text('https://profile.test/country.mmdb'), findsOneWidget);
+      expect(
+        find.text(currentAppLocalizations.geoSourceProfile),
+        findsOneWidget,
+      );
+      await tester.tap(
+        find.text(currentAppLocalizations.preferProfileGeoSources),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        container.read(patchClashConfigProvider).preferProfileGeoSources,
+        isFalse,
+      );
+      expect(find.text('https://profile.test/country.mmdb'), findsNothing);
+      expect(find.text(defaultGeoXUrl[GeoResource.MMDB]!), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 }

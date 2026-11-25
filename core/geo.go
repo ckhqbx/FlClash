@@ -63,6 +63,11 @@ func handleUpdateGeoData(params GeoUpdateParams) error {
 
 func onGeoUpdate(geoType string, updating bool, skipped bool, updateErr error) {
 	if updating {
+		geoSourceMu.RLock()
+	} else {
+		defer geoSourceMu.RUnlock()
+	}
+	if updating {
 		claimUpdateAs(geoUpdateScope+geoType, true)
 	} else {
 		releaseHookUpdate(geoUpdateScope + geoType)

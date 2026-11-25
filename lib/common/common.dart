@@ -51,3 +51,4 @@ export 'task.dart';
 export 'task_pool.dart';
 export 'webdav.dart';
 export 'yaml.dart';
+export 'geo_sources.dart';

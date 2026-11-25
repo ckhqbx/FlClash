@@ -3777,4 +3777,20 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get vpnServiceStartFailed => 'VPN サービスを起動できませんでした。';
+
+  @override
+  String get preferProfileGeoSources => '設定ファイルの Geo ソースを優先';
+
+  @override
+  String get preferProfileGeoSourcesDescription =>
+      '現在の設定のリソース URL を使用し、未指定の項目はアプリ設定で補います。';
+
+  @override
+  String get geoSourceProfile => 'ソース：現在の設定';
+
+  @override
+  String get geoSourceApp => 'ソース：アプリ設定';
+
+  @override
+  String get geoSourceApplyFailed => 'Geo リソースを更新する前に、現在の設定を正常に適用してください。';
 }

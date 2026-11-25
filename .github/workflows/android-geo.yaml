@@ -1,0 +1,86 @@
+name: Android Geo sources
+on:
+  push:
+    branches: [feat/profile-geo-sources]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-geo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch public submodules
+        run: |
+          git config --global url."https://github.com/".insteadOf git@github.com:
+          git submodule update --init --recursive
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.1'
+          cache-dependency-path: core/go.sum
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.50.0'
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r28c
+          link-to-sdk: true
+      - name: Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libgtk-3-dev
+          flutter pub get
+      - name: Dart checks
+        run: |
+          cp pubspec.yaml /tmp/flclash-pubspec.yaml
+          sed -i 's/build_assets: true/build_assets: false/g' pubspec.yaml
+          dart format --output=none --set-exit-if-changed lib/common/geo_sources.dart lib/common/task.dart lib/models/clash_config.dart lib/providers/actions/setup.dart lib/providers/state/system.dart lib/views/resources.dart test/common/geo_sources_test.dart test/models/config_test.dart
+          flutter analyze --no-fatal-infos
+          flutter test test/common/geo_sources_test.dart test/common/task_test.dart test/models/config_test.dart test/providers/geo_resource_action_test.dart test/providers/setup_action_test.dart test/providers/state_derived_test.dart test/views/resources_view_test.dart test/l10n test/lint/dynamic_message_key_test.dart
+          cp /tmp/flclash-pubspec.yaml pubspec.yaml
+      - name: Core tests
+        working-directory: core
+        env:
+          CGO_ENABLED: 0
+        run: |
+          go test -count=1 .
+          go vet . ./cmd/...
+          GOOS=android GOARCH=arm64 go vet -tags=with_gvisor . ./mobile ./tun ./platform
+      - name: Configure release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE }}
+          SIGNING_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          umask 077
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
+          python3 - <<'PY'
+          import os,pathlib
+          p=pathlib.Path('android/local.properties')
+          with p.open('a') as f:
+              f.write('\nkeyAlias=flclash\nstorePassword='+os.environ['SIGNING_PASSWORD']+'\nkeyPassword='+os.environ['SIGNING_PASSWORD']+'\n')
+          PY
+      - name: Build signed ARM64 APK
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+          UPDATE_REPOSITORY: ${{ github.repository }}
+        run: |
+          flutter build apk --release --split-per-abi --target-platform android-arm64 --dart-define=APP_ENV=stable --dart-define=FLCLASH_REPOSITORY="$UPDATE_REPOSITORY" --build-name=0.9.4-geo.1 --build-number=2026112501
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk dist/FlClash-0.9.4-geo.1-arm64.apk
+          sha256sum dist/*.apk > dist/SHA256SUMS
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner" verify --verbose --print-certs dist/*.apk > dist/signature.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FlClash-Android-Geo
+          path: dist/
+          if-no-files-found: error

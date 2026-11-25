@@ -90,6 +90,15 @@ com.follow.clash.action.TOGGLE
 adb shell am start -a com.follow.clash.action.TOGGLE
 ```
 
+## 配置文件的 Geo 来源
+
+本分支基于 v0.9.4，默认优先使用当前配置文件中 `geox-url` 指定的 GeoSite、GeoIP、MMDB 和 ASN 地址。
+未指定的项目由应用资源设置补齐；在“资源”页面关闭“优先使用配置文件的 Geo 来源”可恢复应用设置优先。
+页面会显示实际使用的地址及来源。来源变化时，加载配置前会更新所需数据库；下载、格式或分类校验失败时保留可恢复的旧数据库。
+
+安卓安装包保留 `com.follow.clash` 包名，使用独立签名。首次从官方版迁移，先导出配置和设置备份，再卸载官方版、安装本分支并导入备份。
+后续安装包必须使用相同签名才能覆盖升级。构建工作流通过仓库机密提供签名，不将签名文件、订阅地址或个人配置提交到仓库。
+
 ## 从源码构建
 
 需要 [Flutter](https://docs.flutter.dev/get-started/install) 3.50（正式版构建使用 3.50.0）、[Go](https://go.dev/dl/) 1.27，

@@ -2182,6 +2182,9 @@ abstract class PatchClashConfig with _$PatchClashConfig {
       toJson: _geoXUrlToJson,
     )
     Map<GeoResource, String> geoXUrl,
+    @Default(true)
+    @JsonKey(name: 'prefer-profile-geo-sources')
+    bool preferProfileGeoSources,
     @Default(GeodataLoader.memconservative)
     @JsonKey(name: 'geodata-loader')
     GeodataLoader geodataLoader,
@@ -2394,7 +2397,7 @@ extension PatchClashConfigExt on PatchClashConfig {
       mixedPort: mixedPort,
       geoAutoUpdate: geoAutoUpdate,
       geoUpdateInterval: geoUpdateInterval,
-      geoXUrl: geoXUrl.raw,
+      geoXUrl: const {},
       options: options,
     );
   }
@@ -2415,7 +2418,6 @@ extension PatchClashConfigExt on PatchClashConfig {
     unifiedDelay: defaultClashConfig.unifiedDelay,
     geoAutoUpdate: defaultClashConfig.geoAutoUpdate,
     geoUpdateInterval: defaultClashConfig.geoUpdateInterval,
-    geoXUrl: defaultClashConfig.geoXUrl,
     testUrl: defaultClashConfig.testUrl,
     mitm: mitm.copyWith(capture: defaultClashConfig.mitm.capture),
   );

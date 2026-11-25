@@ -1252,5 +1252,10 @@
   "coreRunningDesc": "The app is connected to the core",
   "forceRestartCore": "Force restart",
   "vpnPermissionNotGranted": "VPN permission was not granted, so the VPN did not start. An always-on VPN set for another app also blocks it.",
-  "vpnServiceStartFailed": "The VPN service could not start."
+  "vpnServiceStartFailed": "The VPN service could not start.",
+  "preferProfileGeoSources": "Prefer profile Geo sources",
+  "preferProfileGeoSourcesDescription": "Use resource URLs from the current profile; app settings fill in missing URLs.",
+  "geoSourceProfile": "Source: current profile",
+  "geoSourceApp": "Source: app settings",
+  "geoSourceApplyFailed": "Apply the selected profile successfully before updating Geo resources."
 }

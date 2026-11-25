@@ -4003,4 +4003,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get vpnServiceStartFailed => 'Le service VPN n\'a pas pu démarrer.';
+
+  @override
+  String get preferProfileGeoSources => 'Priorité aux sources Geo du profil';
+
+  @override
+  String get preferProfileGeoSourcesDescription =>
+      'Utiliser les URL du profil et compléter les adresses manquantes avec les réglages.';
+
+  @override
+  String get geoSourceProfile => 'Source : profil actuel';
+
+  @override
+  String get geoSourceApp => 'Source : réglages';
+
+  @override
+  String get geoSourceApplyFailed =>
+      'Appliquez le profil actuel avant de mettre à jour les ressources Geo.';
 }

@@ -1137,5 +1137,10 @@
   "coreRunningDesc": "La app está conectada al núcleo",
   "forceRestartCore": "Forzar reinicio",
   "vpnPermissionNotGranted": "No se concedió el permiso de VPN, así que la VPN no se inició. Una VPN siempre activa configurada en otra app también lo impide.",
-  "vpnServiceStartFailed": "No se pudo iniciar el servicio VPN."
+  "vpnServiceStartFailed": "No se pudo iniciar el servicio VPN.",
+  "preferProfileGeoSources": "Priorizar fuentes Geo del perfil",
+  "preferProfileGeoSourcesDescription": "Usar las URL del perfil y completar las que falten con los ajustes de la aplicación.",
+  "geoSourceProfile": "Fuente: perfil actual",
+  "geoSourceApp": "Fuente: ajustes",
+  "geoSourceApplyFailed": "Aplique correctamente el perfil actual antes de actualizar los recursos Geo."
 }

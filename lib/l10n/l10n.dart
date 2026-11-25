@@ -6941,6 +6941,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The VPN service could not start.'**
   String get vpnServiceStartFailed;
+
+  /// No description provided for @preferProfileGeoSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer profile Geo sources'**
+  String get preferProfileGeoSources;
+
+  /// No description provided for @preferProfileGeoSourcesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use resource URLs from the current profile; app settings fill in missing URLs.'**
+  String get preferProfileGeoSourcesDescription;
+
+  /// No description provided for @geoSourceProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: current profile'**
+  String get geoSourceProfile;
+
+  /// No description provided for @geoSourceApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Source: app settings'**
+  String get geoSourceApp;
+
+  /// No description provided for @geoSourceApplyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply the selected profile successfully before updating Geo resources.'**
+  String get geoSourceApplyFailed;
 }
 
 class _AppLocalizationsDelegate

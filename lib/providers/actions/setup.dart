@@ -14,6 +14,7 @@ typedef BuiltProfile = ({
   String md5,
   ConfigCounts counts,
   SetupBase? base,
+  Map<GeoResource, String> geoSources,
 });
 
 class _RunRequest {
@@ -522,6 +523,7 @@ class SetupAction extends _$SetupAction {
         md5: yaml.toMd5(),
         counts: configCountsOf(const {}),
         base: null,
+        geoSources: const <GeoResource, String>{},
       );
     }
     final defaultUA = globalState.packageInfo.ua;
@@ -595,8 +597,15 @@ class SetupAction extends _$SetupAction {
         mitmModules: setupState.mitmModules,
       ),
     );
+    final geoSources = profileGeoSources(rawConfig['geox-url']);
     if (profileBase == null) {
-      return (yaml: res.yaml, md5: res.md5, counts: res.counts, base: null);
+      return (
+        yaml: res.yaml,
+        md5: res.md5,
+        counts: res.counts,
+        base: null,
+        geoSources: geoSources,
+      );
     }
     final (:base, :path) = profileBase;
     return (
@@ -608,6 +617,7 @@ class SetupAction extends _$SetupAction {
         rules: res.counts.rules + base.rules,
       ),
       base: SetupBase(path: path, overlay: res.yaml),
+      geoSources: geoSources,
     );
   }
 
@@ -802,6 +812,11 @@ class SetupAction extends _$SetupAction {
       return getProfile(setupState: state, patchConfig: realPatchConfig);
     }, title: 'build profile');
     final profileFailed = realProfile == null;
+    if (realProfile != null) {
+      ref
+          .read(profileGeoSourceProvider.notifier)
+          .setSources(realProfile.geoSources);
+    }
     final setupParams = _setupParams.copyWith(base: realProfile?.base);
     final inputs = switch (setupState) {
       final state? when !profileFailed => (
